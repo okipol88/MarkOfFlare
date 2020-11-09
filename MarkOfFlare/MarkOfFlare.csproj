@@ -15,16 +15,50 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
-  
-    <PropertyGroup>
-        <TypeScriptESModuleInterop>True</TypeScriptESModuleInterop>
-        <TypeScriptAllowSyntheticDefaultImports>True</TypeScriptAllowSyntheticDefaultImports>
-    </PropertyGroup>
-    
+      
+   <ItemGroup>
+    <TypeScriptCompile Remove="node_modules\**" />
+  </ItemGroup>
+
   <ItemGroup>
     <Folder Include="Typescript\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Typescript\Xrp.ts" />
+    <None Remove="Typescript\Xrp.ts" />
   </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="Typescript\Xrp.ts" />
+  </ItemGroup>
+    
+    
+      <PropertyGroup>
+    <TypeScriptTarget>ES2020</TypeScriptTarget>
+    <TypeScriptJSXEmit>React</TypeScriptJSXEmit>
+    <TypeScriptModuleKind>CommonJS</TypeScriptModuleKind>
+    <TypeScriptCompileOnSaveEnabled>True</TypeScriptCompileOnSaveEnabled>
+    <TypeScriptNoImplicitAny>True</TypeScriptNoImplicitAny>
+    <TypeScriptRemoveComments>True</TypeScriptRemoveComments>
+    <TypeScriptOutFile></TypeScriptOutFile>
+    <TypeScriptOutDir></TypeScriptOutDir>
+    <TypeScriptGeneratesDeclarations>False</TypeScriptGeneratesDeclarations>
+    <TypeScriptNoEmitOnError>True</TypeScriptNoEmitOnError>
+    <TypeScriptSourceMap>True</TypeScriptSourceMap>
+    <TypeScriptMapRoot />
+    <TypeScriptSourceRoot />
+    <TypeScriptESModuleInterop>True</TypeScriptESModuleInterop>
+    <TypeScriptAllowSyntheticDefaultImports>True</TypeScriptAllowSyntheticDefaultImports>
+  </PropertyGroup>
+
+  <Target Name="npm restore" BeforeTargets="BeforeBuild">
+    <Exec Command="npm install" />
+  </Target>
+
+  <Target Name="webpack" AfterTargets="Build">
+    <Exec Command="npm run pack" />
+  </Target>
+
+  <Target Name="webpack clean" AfterTargets="Clean" Condition="Exists('node_modules')">
+    <Exec Command="npm run clean" />
+  </Target>
+    
 </Project>
