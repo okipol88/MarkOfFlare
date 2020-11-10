@@ -1,0 +1,149 @@
+﻿@inject IJSRuntime JsWindow
+<h3>Key deriviation</h3>
+
+<p>
+    <input @bind="mnemonic" /> mnemonic: @mnemonic
+</p>
+<p>
+    <input @bind="password" /> optional password: @password
+</p>
+<p>
+    <input @bind="ethereumAddress" />
+    <br />
+    ethereum address: @ethereumAddress
+</p>
+<p>
+    <button @onclick="DeriveKeys" type="button" class="btn btn-primary">
+        Derive keys
+    </button>
+</p>
+
+<p>XRP address: @address</p>
+<p>
+    <input @bind="fee" /> fee in drops: @fee
+</p>
+<p>
+    <input @bind="sequence" /> next TX sequence of XRP address: @sequence
+</p>
+
+<p>
+    <button @onclick="SignTx" disabled="@isTxSignDisabled" type="button" class="btn btn-primary">
+        Sign Transaction
+    </button>
+</p>
+<p>
+    FLARE message: @flareMessage
+</p>
+<p hidden="@(txException == null ? true : false )">
+    error occured: @txException?.Message
+</p>
+<p hidden="@(txException == null ? false : true )">
+    @tx
+</p>
+<p hidden="@(tx == null ? true : false )">
+    <img src="@String.Format("data:image/png;base64,{0}", base64qrCode)" height="600" width="600" />
+</p>
+
+@code { private string mnemonic;
+    private string password;
+    private string address;
+    private string flareMessage;
+    private uint fee;
+    private uint sequence;
+    private string ethereumAddress = "0x415f8315c9948Ad91e2Cce5b8583A36dA431fb61";
+    private KeyPair keyPair = null;
+    private bool isTxSignDisabled = true;
+    private Exception txException;
+    private string base64qrCode = "";
+
+    private SignedTx tx;
+
+    public class KeyPair
+    {
+        public string @private { get; set; }
+        public string @public { get; set; }
+    }
+
+    public class SignedTx
+    {
+        public string signedTransaction { get; set; }
+        public string id { get; set; }
+
+        public override string ToString()
+        {
+            return $"signedTransaction: {signedTransaction}{Environment.NewLine}id: {id}";
+        }
+    }
+
+    private async Task DeriveKeys(MouseEventArgs e)
+    {
+        try
+        {
+            //keyPair = await JsWindow.InvokeAsync<KeyPair>("RippleOnFire.Derive", "abcdef");
+            //address = await JsWindow.InvokeAsync<string>("RippleOnFire.GetAddress", keyPair.@public);
+            // "attend dinner chat movie brain invite forest quiz bulb taste evidence danger"
+            keyPair = await JsWindow.InvokeAsync<KeyPair>("RippleOnFire.DeriveFromMnemonic",
+              mnemonic, password);
+            address = await JsWindow.InvokeAsync<string>("RippleOnFire.GetAddress", keyPair.@public);
+
+            isTxSignDisabled = false;
+        }
+        catch (Exception)
+        {
+            isTxSignDisabled = true;
+            throw;
+        }
+    }
+
+    private async Task SignTx(MouseEventArgs e)
+    {
+        try
+        {
+            flareMessage = MakeFlareMessage(ethereumAddress);
+            tx = await JsWindow.InvokeAsync<SignedTx>("RippleOnFire.SignTransaction", keyPair, fee, sequence, flareMessage);
+            txException = null;
+        }
+        catch (Exception ex)
+        {
+            txException = ex;
+            throw;
+        }
+        try
+        {
+            if (tx?.signedTransaction is string txString)
+            {
+                base64qrCode = GetQrCodeBase64(txString);
+            }
+        }
+        catch (Exception ex)
+        {
+            base64qrCode = "";
+        }
+    }
+
+    // Creates the flare message as given on Flare site
+    private string MakeFlareMessage(string ethereumAddress)
+    {
+
+        var without_0x = ethereumAddress.StartsWith("0x") || ethereumAddress.StartsWith("0X") ? ethereumAddress.Remove(0, 2) : ethereumAddress;
+
+        var upperCase = without_0x.ToUpper();
+
+        var targetAddress = "02" + string.Join("", Enumerable.Range(0, 24).Select(x => "0")) + upperCase;
+
+        return targetAddress;
+    }
+
+    // QrCode generation
+    @using QRCoder;
+
+    public string GetQrCodeBase64(string txtQRCode)
+    {
+        QRCodeGenerator _qrCode = new QRCodeGenerator();
+        QRCodeData qrCodeData = _qrCode.CreateQrCode(txtQRCode, QRCodeGenerator.ECCLevel.Q);
+        PngByteQRCode qrCode = new PngByteQRCode(qrCodeData);
+        var qrCodeImage = qrCode.GetGraphic(20);
+        return System.Convert.ToBase64String(qrCodeImage);
+    }
+
+}

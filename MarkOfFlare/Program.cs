@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using MvvmBlazor.Extensions;
+using MarkOfFlare.ViewModel;
 
 namespace MarkOfFlare
 {
@@ -18,6 +20,10 @@ namespace MarkOfFlare
             builder.RootComponents.Add<App>("app");
 
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+
+            builder.Services.AddMvvm();
+
+            builder.Services.AddTransient<IFlareWizarClaimViewModel, FlareClaimViewModel>();
 
             await builder.Build().RunAsync();
         }

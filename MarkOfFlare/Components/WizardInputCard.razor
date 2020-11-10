@@ -1,0 +1,41 @@
+﻿@if (WizardStep == CurrentStep)
+{
+    <div>
+        <div class="card text-center w-50">
+            <div class="card-header">
+                @CardHeader
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">@CardTitle</h5>
+                <p class="card-text">@CardText</p>
+
+                @ChildContent
+
+            </div>
+            <div class="card-footer">
+            </div>
+        </div>
+    </div>
+}
+
+@functions{
+
+    [Parameter]
+    public int WizardStep { get; set; }
+
+    [Parameter]
+    public int CurrentStep { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public string CardHeader { get; set; }
+
+    [Parameter]
+    public string CardTitle { get; set; }
+
+    [Parameter]
+    public string CardText { get; set; }
+
+}

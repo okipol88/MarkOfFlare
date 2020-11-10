@@ -1,0 +1,36 @@
+﻿<div>
+    <div class="progress">
+        <div class="progress-bar progress-bar-striped" role="progressbar" style="width: @Progress" aria-valuenow="@Progress" aria-valuemin="0" aria-valuemax="100"></div>
+    </div>
+
+    <br />
+
+    <div>@ChildContent</div>
+
+    <div>
+        <button class="btn btn-primary btn-lg" disabled="@PreviousButtonDisabled" onclick=@GoToPreviousStep>Previous Step</button>
+        <button class="btn btn-primary btn-lg" disabled="@NextButtonDisabled" onclick=@GoToNextStep>Next Step</button>
+    </div>
+
+</div>
+
+@functions{
+
+    [Parameter]
+    public int Progress { get; set; }
+
+    [Parameter]
+    public bool PreviousButtonDisabled { get; set; }
+
+    [Parameter]
+    public bool NextButtonDisabled { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public EventCallback GoToPreviousStep { get; set; }
+
+    [Parameter]
+    public EventCallback GoToNextStep { get; set; }
+}

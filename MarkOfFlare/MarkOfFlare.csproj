@@ -15,6 +15,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="QRCoder" Version="1.3.9" />
+    <PackageReference Include="MvvmBlazor" Version="1.1.6" />
   </ItemGroup>
       
    <ItemGroup>
@@ -23,6 +24,9 @@
 
   <ItemGroup>
     <Folder Include="Typescript\" />
+    <Folder Include="View\" />
+    <Folder Include="ViewModel\" />
+    <Folder Include="Components\" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Typescript\Xrp.ts" />
