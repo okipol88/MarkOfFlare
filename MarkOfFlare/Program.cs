@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MvvmBlazor.Extensions;
 using MarkOfFlare.ViewModel;
+using MarkOfFlare.Services;
 
 namespace MarkOfFlare
 {
@@ -24,6 +25,10 @@ namespace MarkOfFlare
             builder.Services.AddMvvm();
 
             builder.Services.AddTransient<IFlareWizarClaimViewModel, FlareClaimViewModel>();
+            builder.Services.AddTransient<IXrpKeyDeriviationViewModel, XrpKeyDeriviationViewModel>();
+            builder.Services.AddTransient<IFlareSigningViewModel, FlareSigningViewModel>();
+
+            builder.Services.AddSingleton<IMessenger>(new Messenger());
 
             await builder.Build().RunAsync();
         }

@@ -27,6 +27,9 @@
     <Folder Include="View\" />
     <Folder Include="ViewModel\" />
     <Folder Include="Components\" />
+    <Folder Include="Services\" />
+    <Folder Include="Messages\" />
+    <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Typescript\Xrp.ts" />

@@ -1,0 +1,41 @@
+﻿@using MvvmBlazor.Components
+@inherits MvvmComponentBase
+
+@inject ViewModel.IFlareSigningViewModel ViewModel
+@inject IJSRuntime JsWindow
+
+<h3>Flare signing</h3>
+
+<p>XRP address: @ViewModel.Address</p>
+
+<p>
+    <input @bind="@ViewModel.EthereumAddress" />
+    <br />
+    ethereum address: @ViewModel.EthereumAddress
+</p>
+
+<p>
+    <input @bind="@ViewModel.Fee" /> fee in drops: @ViewModel.Fee
+</p>
+<p>
+    <input @bind="@ViewModel.Sequence" /> next TX sequence of XRP address: @ViewModel.Sequence
+</p>
+
+<p>
+    <button @onclick="@ViewModel.SignTx" disabled="@ViewModel.IsTxSignDisabled" type="button" class="btn btn-primary">
+        Sign Transaction
+    </button>
+</p>
+<p>
+    FLARE message: @ViewModel.FlareMessage
+</p>
+<p hidden="@(ViewModel.TxException == null ? true : false )">
+    error occured: @ViewModel.TxException?.Message
+</p>
+<p hidden="@(ViewModel.TxException == null ? false : true )">
+    @ViewModel.Tx
+</p>
+<p hidden="@(ViewModel.Tx == null ? true : false )">
+    <img src="@String.Format("data:image/png;base64,{0}", ViewModel.Base64qrCode)" height="600" width="600" />
+</p>
+
