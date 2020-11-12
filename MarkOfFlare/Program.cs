@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using MvvmBlazor.Extensions;
 using MarkOfFlare.ViewModel;
 using MarkOfFlare.Services;
+using MarkOfFlare.Interfaces;
 
 namespace MarkOfFlare
 {

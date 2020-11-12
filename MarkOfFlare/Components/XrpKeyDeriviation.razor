@@ -1,7 +1,7 @@
 ﻿@using MvvmBlazor.Components
-@inherits MvvmComponentBase
+@using Interfaces
 
-@inject ViewModel.IXrpKeyDeriviationViewModel ViewModel
+@inherits MvvmComponentBase
 @inject IJSRuntime JsWindow
 
 <h3>XRP Key deriviation</h3>
@@ -13,9 +13,14 @@
     <input @bind="@ViewModel.Password" /> optional password: @ViewModel.Password
 </p>
 <p>
-    <button @onclick="@ViewModel.DeriveKeys" type="button" class="btn btn-primary">
+    <button @onclick="@ViewModel.DeriveKeys" disabled="@ViewModel.IsKeyDeriviationDisabled" type="button" class="btn btn-primary">
         Derive keys
     </button>
 </p>
 
 <p>XRP address: @ViewModel.Address</p>
+
+@functions{
+    [Parameter]
+    public IXrpKeyDeriviationViewModel ViewModel { get; set; } }
+}

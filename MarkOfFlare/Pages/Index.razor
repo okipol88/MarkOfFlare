@@ -3,26 +3,76 @@
 @using MvvmBlazor.Components
 @using MarkOfFlare.Components
 @using MarkOfFlare.ViewModel
+@using MvvmBlazor.ViewModel;
+@using Interfaces;
 
 @inherits MvvmComponentBase
 @inject IJSRuntime JsWindow
 @inject IFlareWizarClaimViewModel ViewModel
+@inject IXrpKeyDeriviationViewModel StepOne
+@inject IFlareSigningViewModel StepTwo
 
 <h3>Flare</h3>
 
 <Wizard Progress="@ViewModel.Progress" PreviousButtonDisabled="@ViewModel.PreviousButtonDisabled"
         NextButtonDisabled="@ViewModel.NextButtonDisabled"
         GoToPreviousStep="@ViewModel.GoToPreviousStep" GoToNextStep="@ViewModel.GoToNextStep">
+
     <WizardInputCard WizardStep="1" CurrentStep="@ViewModel.CurrentStep"
                      CardHeader="Step 1 of 2"
                      CardTitle="Welcome to the Framingham CVD 10 Year Risk Calculator"
                      CardText="Please select your gender to start the calculator">
-       <XrpKeyDeriviation />
+        <XrpKeyDeriviation ViewModel="@StepOne" />
     </WizardInputCard>
     <WizardInputCard WizardStep="2" CurrentStep="@ViewModel.CurrentStep"
                      CardHeader="Step 2 of 2"
                      CardTitle="Welcome to the Framingham CVD 10 Year Risk Calculator"
                      CardText="Please select your gender to start the calculator">
-       <FlareSigning />
+        <FlareSigning ViewModel="@StepTwo" />
     </WizardInputCard>
 </Wizard>
+
+@code {
+
+  private IEnumerable<ViewModelBase> ViewModels
+  {
+      get
+      {
+          return new List<object> { ViewModel, StepOne, StepTwo }
+              .OfType<ViewModelBase>();
+
+      }
+  }
+
+
+  protected override void OnInitialized()
+  {
+      base.OnInitialized();
+
+      foreach (var vm in ViewModels)
+      {
+          vm.OnInitialized();
+      }
+  }
+
+  protected override async Task OnInitializedAsync()
+  {
+      foreach (var vm in ViewModels)
+      {
+          await vm.OnInitializedAsync();
+      }
+
+      await base.OnInitializedAsync();
+  }
+
+  protected override void Dispose(bool disposing)
+  {
+      base.Dispose(disposing);
+
+      foreach (var vm in ViewModels)
+      {
+          vm.Dispose();
+      }
+  }
+
+}

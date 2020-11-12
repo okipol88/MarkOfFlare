@@ -1,7 +1,7 @@
 ﻿@using MvvmBlazor.Components
-@inherits MvvmComponentBase
+@using Interfaces
 
-@inject ViewModel.IFlareSigningViewModel ViewModel
+@inherits MvvmComponentBase
 @inject IJSRuntime JsWindow
 
 <h3>Flare signing</h3>
@@ -39,3 +39,9 @@
     <img src="@String.Format("data:image/png;base64,{0}", ViewModel.Base64qrCode)" height="600" width="600" />
 </p>
 
+
+@functions{
+
+    [Parameter]
+    public IFlareSigningViewModel ViewModel { get; set; } }
+}
