@@ -25,7 +25,7 @@ namespace MarkOfFlare.ViewModel
     private readonly Dictionary<int, bool> _stepNumberToNavigationMap = new Dictionary<int, bool>()
         {
             {0, false },
-            {1, false },
+            {1, true },
             {2, false },
         };
 
@@ -88,7 +88,7 @@ namespace MarkOfFlare.ViewModel
       PreviousButtonDisabled = !canPrevious || CurrentStep == 1;
       NextButtonDisabled = !canNext || CurrentStep == MaxSteps;
 
-      Console.WriteLine($"PRevious {PreviousButtonDisabled}; Next {NextButtonDisabled}");
+      Console.WriteLine($"Previous {PreviousButtonDisabled}; Next {NextButtonDisabled}");
     }
 
     public void GoToNextStep()

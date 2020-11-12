@@ -44,7 +44,6 @@
       }
   }
 
-
   protected override void OnInitialized()
   {
       base.OnInitialized();
@@ -52,7 +51,17 @@
       foreach (var vm in ViewModels)
       {
           vm.OnInitialized();
+
+          vm.PropertyChanged += VM_PropertyChanged;
       }
+  }
+
+  protected async void VM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs args)
+  {
+      await InvokeAsync(() =>
+      {
+          StateHasChanged();
+      });
   }
 
   protected override async Task OnInitializedAsync()
@@ -72,6 +81,7 @@
       foreach (var vm in ViewModels)
       {
           vm.Dispose();
+          vm.PropertyChanged -= VM_PropertyChanged;
       }
   }
 
