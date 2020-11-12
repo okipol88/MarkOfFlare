@@ -4,44 +4,65 @@
 @inherits MvvmComponentBase
 @inject IJSRuntime JsWindow
 
-<h3>Flare signing</h3>
+    <div class="jumbotron">
 
-<p>XRP address: @ViewModel.Address</p>
+        <div>XRP address: @ViewModel.Address</div>
 
-<p>
-    <input @bind="@ViewModel.EthereumAddress" />
-    <br />
-    ethereum address: @ViewModel.EthereumAddress
-</p>
+        <div class="row">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">
+                        <span class="oi oi-book"></span>
+                    </span>
+                </div>
+                <input @bind="@ViewModel.EthereumAddress"
+                       type="text" class="form-control" placeholder="ETH address">
+            </div>
+        </div>
 
-<p>
-    <input @bind="@ViewModel.Fee" /> fee in drops: @ViewModel.Fee
-</p>
-<p>
-    <input @bind="@ViewModel.Sequence" /> next TX sequence of XRP address: @ViewModel.Sequence
-</p>
+        <div class="row row-no-gutters">
+            <div class="input-group col-sm-6">
+                <input @bind="@ViewModel.Sequence"
+                       type="number" class="form-control" placeholder="Next transaction sequence">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">
+                        <span class="oi oi-sort-ascending"></span>
+                    </span>
+                </div>
+            </div>
+            <div class="input-group col-sm-6">
+                <input @bind="@ViewModel.Fee"
+                       type="number" class="form-control" placeholder="Fee in drops">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">
+                        <span class="oi oi-dollar"></span>
+                    </span>
+                </div>
+            </div>
+        </div>
 
-<p>
-    <button @onclick="@ViewModel.SignTx" disabled="@ViewModel.IsTxSignDisabled" type="button" class="btn btn-primary">
-        Sign Transaction
-    </button>
-</p>
-<p>
-    FLARE message: @ViewModel.FlareMessage
-</p>
-<p hidden="@(ViewModel.TxException == null ? true : false )">
-    error occured: @ViewModel.TxException?.Message
-</p>
-<p hidden="@(ViewModel.TxException == null ? false : true )">
-    @ViewModel.Tx
-</p>
-<p hidden="@(ViewModel.Tx == null ? true : false )">
-    <img src="@String.Format("data:image/png;base64,{0}", ViewModel.Base64qrCode)" height="600" width="600" />
-</p>
+        <p>
+            <button @onclick="@ViewModel.SignTx" disabled="@ViewModel.IsTxSignDisabled" type="button" class="btn btn-primary">
+                Sign Transaction
+            </button>
+        </p>
+        <p>
+            FLARE message: @ViewModel.FlareMessage
+        </p>
+        <p hidden="@(ViewModel.TxException == null ? true : false )">
+            error occured: @ViewModel.TxException?.Message
+        </p>
+        <p hidden="@(ViewModel.TxException == null ? false : true )">
+            @ViewModel.Tx
+        </p>
+        <p hidden="@(ViewModel.Tx == null ? true : false )">
+            <img src="@String.Format("data:image/png;base64,{0}", ViewModel.Base64qrCode)" height="600" width="600" />
+        </p>
 
+    </div>
 
-@functions{
+        @functions{
 
-    [Parameter]
-    public IFlareSigningViewModel ViewModel { get; set; } }
-}
+            [Parameter]
+            public IFlareSigningViewModel ViewModel { get; set; } }
+        }
