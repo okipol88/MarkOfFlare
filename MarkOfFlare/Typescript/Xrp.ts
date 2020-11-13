@@ -59,10 +59,12 @@ namespace RippleOnFire
         {
             var api = new rippleLib.RippleAPI()
             var tx = new AccountSign()
-            tx.Account = this.GetAddress(keys.private)
+            tx.Account = this.GetAddress(keys.public)
             tx.Fee = fee.toString()
             tx.Sequence = sequence
             tx.MessageKey = messageKey
+
+            console.log("private key " + keys.private + "and public " + keys.public)
 
             var keypair = {
                 privateKey: keys.private,
