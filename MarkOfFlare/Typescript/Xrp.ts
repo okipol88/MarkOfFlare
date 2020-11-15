@@ -88,11 +88,10 @@ namespace RippleOnFire
             return signed;
         }
 
-        public Derive(seedhex: string): IKeyPair
+        public DeriveFromSeed(seed: string): IKeyPair
         {
-            var mySeed = ripple.generateSeed();
-            var x = ripple.deriveKeypair(mySeed);
-            var keypair = new XrpKeyPair(x.publicKey, x.privateKey);
+            var keys = ripple.deriveKeypair(seed);
+            var keypair = new XrpKeyPair(keys.publicKey, keys.privateKey);
 
             console.info(keypair.public);
             console.info(keypair.private);
@@ -117,10 +116,6 @@ namespace RippleOnFire
     export function Load(): void {
         (window as any)['RippleOnFire'] = new KeyPairDerivitaion();
     }
-
-    export function DeriveKeyPair(seed: string): IKeyPair {
-        return new KeyPairDerivitaion().Derive(seed);
-    } 
 }
 
 RippleOnFire.Load();

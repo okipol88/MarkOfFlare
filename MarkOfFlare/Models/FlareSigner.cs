@@ -24,7 +24,9 @@ namespace MarkOfFlare.Models
       Task.Run(async () => await js.InvokeAsync<string>("RippleOnFire.GetAddress", publicKey));
 
     public Task<bool> IsEthereumAdressValid(string ethereumAddress) =>
-      Task.Run(async () => await js.InvokeAsync<bool>("RippleOnFire.IsValidAddress", ethereumAddress));
+      Task.Run(async () => await js.InvokeAsync<bool>("RippleOnFire.IsValidAddress", ethereumAddress)); 
 
+    public Task<KeyPair> DeriveFromSeed(string seed) =>
+      Task.Run(async () => await js.InvokeAsync<KeyPair>("RippleOnFire.DeriveFromSeed", seed));
   }
 }

@@ -69,10 +69,9 @@ var RippleOnFire;
             console.log(signed);
             return signed;
         }
-        Derive(seedhex) {
-            var mySeed = ripple.generateSeed();
-            var x = ripple.deriveKeypair(mySeed);
-            var keypair = new XrpKeyPair(x.publicKey, x.privateKey);
+        DeriveFromSeed(seed) {
+            var keys = ripple.deriveKeypair(seed);
+            var keypair = new XrpKeyPair(keys.publicKey, keys.privateKey);
             console.info(keypair.public);
             console.info(keypair.private);
             return keypair;
@@ -88,10 +87,6 @@ var RippleOnFire;
         window['RippleOnFire'] = new KeyPairDerivitaion();
     }
     RippleOnFire.Load = Load;
-    function DeriveKeyPair(seed) {
-        return new KeyPairDerivitaion().Derive(seed);
-    }
-    RippleOnFire.DeriveKeyPair = DeriveKeyPair;
 })(RippleOnFire || (RippleOnFire = {}));
 RippleOnFire.Load();
 //# sourceMappingURL=Xrp.js.map

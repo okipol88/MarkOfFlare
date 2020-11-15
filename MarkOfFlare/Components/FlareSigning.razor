@@ -6,7 +6,7 @@
 
 <div class="jumbotron">
 
-    <div>XRP address: @ViewModel.Address</div>
+    <div>XRP address: <strong>@ViewModel.Address</strong></div>
 
     <br>
     <div class="row">
@@ -51,27 +51,32 @@
     </div>
     <br>
 
+    @if (ViewModel.Fee.HasValue && ViewModel.Fee > 1000000)
+    {
+        <div class="alert alert-warning">
+            The ammount of drops (@ViewModel.Fee) is <strong>@((double)ViewModel.Fee.Value / 1000000) XRP</strong>. Make sure you want to pay that much for the transaction!
+        </div>
+    }
+
     <div>
         <button @onclick="@(ViewModel.SignTx)" disabled="@(ViewModel.IsTxSignDisabled || ViewModel.IsSigning)" type="button" class="btn btn-primary">
 
             <span hidden="@(!ViewModel.IsSigning)" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
             <span hidden="@(!ViewModel.IsSigning)">Signing...</span>
-            <span hidden="@(ViewModel.IsSigning)" >Sign Transaction</span>
+            <span hidden="@(ViewModel.IsSigning)">Sign Transaction</span>
         </button>
     </div>
-    <div class="text-wrap" >
+    <div class="text-wrap">
         FLARE message: @ViewModel.FlareMessage
     </div>
-    <div class="text-wrap"  hidden="@(ViewModel.TxException == null ? true : false )">
+    <div class="text-wrap" hidden="@(ViewModel.TxException == null ? true : false )">
         error occured: @ViewModel.TxException?.Message
     </div>
     <div class="text-wrap" hidden="@((ViewModel.TxException == null && ViewModel.Tx != null)? false : true )">
-        <p class="text-break">
-            @($"Transaction id: {@ViewModel.Tx?.id}")
-        </p>
-        <p class="text-break">
-            @($"Signed transaction: {@ViewModel.Tx?.signedTransaction}")
-        </p>
+        <p class="text-break">Transaction id: </p>
+        <p class="font-weight-bold text-break">@($"{@ViewModel.Tx?.id}")</p>
+        <p class="text-break">Signed transaction:</p>
+        <p class="font-weight-bold text-break">@($"{@ViewModel.Tx?.signedTransaction}")</p>
     </div>
     @if (!string.IsNullOrEmpty(ViewModel.Base64qrCode))
     {
@@ -82,8 +87,8 @@
 
 </div>
 
-    @functions{
+@code{
 
-        [Parameter]
-        public IFlareSigningViewModel ViewModel { get; set; } }
-    }
+    [Parameter]
+    public IFlareSigningViewModel ViewModel { get; set; }
+}

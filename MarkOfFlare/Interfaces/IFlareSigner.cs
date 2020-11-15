@@ -10,6 +10,7 @@ namespace MarkOfFlare.Interfaces
 
   public interface IFlareSigner
   {
+    Task<KeyPair> DeriveFromSeed(string seed);
     Task<KeyPair> DeriveKeyPair(string mnemonic, string password);
     Task<string> GetAddress(string publicKey);
     Task<bool> IsEthereumAdressValid(string ethereumAddress);

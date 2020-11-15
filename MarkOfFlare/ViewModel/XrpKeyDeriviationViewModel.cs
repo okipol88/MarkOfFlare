@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using MarkOfFlare.Interfaces;
 using MarkOfFlare.Messages;
@@ -23,23 +24,25 @@ namespace MarkOfFlare.ViewModel
     private string address;
     private Exception deriviationError;
     private bool isKeyDeriviationDisabled = true;
+    private bool isDerivingKeys;
+    private KeyMode keyMode;
+    private string secret;
 
     public string Mnemonic
     {
       get => mnemonic;
-      set 
-      {
-        if (Set(ref mnemonic, value))
-        {
-          IsKeyDeriviationDisabled = !(Mnemonic?.Length > 0);
-        }
-      }
+      set => Set(ref mnemonic, value);
     }
 
     public string Password
     {
       get => password;
       set => Set(ref password, value);
+    }
+    public string Secret
+    {
+      get => secret;
+      set => Set(ref secret, value);
     }
 
     public string Address
@@ -58,13 +61,64 @@ namespace MarkOfFlare.ViewModel
       get => isKeyDeriviationDisabled;
       set => Set(ref isKeyDeriviationDisabled, value);
     }
+    public bool IsDerivingKeys
+    {
+      get => isDerivingKeys;
+      set => Set(ref isDerivingKeys, value);
+    }
+    public KeyMode KeyMode
+    {
+      get => keyMode;
+      set
+      {
+        if (Set(ref keyMode, value))
+        {
+          Secret = null;
+          Mnemonic = null;
+        }
+      }
+    }
+
+    public override void OnPropertyChanged(string propertyName)
+    {
+      base.OnPropertyChanged(propertyName);
+
+      var props = new string[] { nameof(KeyMode), nameof(Secret), nameof(Mnemonic) };
+      if (!props.Any(prop => prop == propertyName))
+      {
+        return;
+      }
+
+      IsKeyDeriviationDisabled = KeyMode == KeyMode.Mnemonic 
+        ? !(Mnemonic?.Length > 0)
+        : !(Secret?.Length > 0);
+    }
 
     public async Task DeriveKeys()
-    {
+    { 
+      if (IsDerivingKeys)
+      {
+        return;
+      }
+
+      IsDerivingKeys = true;
       try
       {
-        // "attend dinner chat movie brain invite forest quiz bulb taste evidence danger"
-        var keyPair = await flareSigner.DeriveKeyPair(mnemonic, password);
+        Models.KeyPair keyPair = null;
+        switch (KeyMode)
+        {
+          case KeyMode.Mnemonic:
+            keyPair = await flareSigner.DeriveKeyPair(Mnemonic, Password);
+            break;
+          case KeyMode.Secret:
+            keyPair = await flareSigner.DeriveFromSeed(Secret);
+            break;
+          case KeyMode.PrivateKey:
+            keyPair = await flareSigner.DeriveKeyPair(mnemonic, password);
+            break;
+          default:
+            break;
+        }
         Address = await flareSigner.GetAddress(keyPair.@public);
         messenger.Send(new XrpSigningInformationMessage(keyPair, address));
       }
@@ -72,6 +126,10 @@ namespace MarkOfFlare.ViewModel
       {
         Address = null;
         messenger.Send(new XrpSigningInformationMessage(null, null));
+      }
+      finally
+      {
+        IsDerivingKeys = false;
       }
     }
   }

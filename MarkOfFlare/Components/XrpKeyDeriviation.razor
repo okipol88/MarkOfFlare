@@ -4,41 +4,80 @@
 @inherits MvvmComponentBase
 @inject IJSRuntime JsWindow
 
-    <div class="jumbotron">
-
-        <div class="row row-no-gutters">
-            <div class="input-group">
-                <div class="input-group-prepend">
-                    <span class="input-group-text">
-                        <span class="oi oi-book"></span>
-                    </span>
-                </div>
-                <input @oninput="@(args => ViewModel.Mnemonic = (string)args.Value)" class="form-control" placeholder="Mnemonic seed words" />
-            </div>
-        </div>
-        <br>
-        <div class="row row-no-gutters">
-            <div class="input-group">
-                <div class="input-group-prepend">
-                    <span class="input-group-text">
-                        <span class="oi oi-book"></span>
-                    </span>
-                </div>
-                <input @oninput="@(args => ViewModel.Password = (string)args.Value)" class="form-control" placeholder="Optional password" />
-            </div>
-        </div>
-        <br>
+<div class="jumbotron">
+    <div class="col">
+        @foreach (var item in (Enum.GetValues(typeof(KeyMode))).Cast<KeyMode>())
+        {
         <div class="row">
-            <button @onclick="@ViewModel.DeriveKeys" disabled="@ViewModel.IsKeyDeriviationDisabled" type="button" class="btn btn-primary">
-                Derive keys
-            </button>
+            <label for="@item">
+                @item <input type="radio" name="technology" id="@item" value="@item"
+                             @onchange="@(args => ViewModel.KeyMode = Enum.Parse<KeyMode>(args.Value.ToString()))"
+                             checked=@(ViewModel.KeyMode == item) />
+            </label>
         </div>
-        <br>
-
-        <p>XRP address: @ViewModel.Address</p>
+        }
     </div>
 
-    @functions{
+        @if (ViewModel.KeyMode == KeyMode.Mnemonic)
+        {
+            <div class="row row-no-gutters">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">
+                            <span class="oi oi-book"></span>
+                        </span>
+                    </div>
+                    <input @oninput="@(args => ViewModel.Mnemonic = (string)args.Value)" class="form-control" placeholder="Mnemonic seed words" />
+                </div>
+            </div>
+            <br>
+            <div class="row row-no-gutters">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">
+                            <span class="oi oi-book"></span>
+                        </span>
+                    </div>
+                    <input @oninput="@(args => ViewModel.Password = (string)args.Value)" class="form-control" placeholder="Optional password" />
+                </div>
+            </div>
+            <br>
+        }
+        else
+        {
+            <div class="row row-no-gutters">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">
+                            <span class="oi oi-book"></span>
+                        </span>
+                    </div>
+                    <input @oninput="@(args => ViewModel.Secret = (string)args.Value)" class="form-control"
+                           placeholder="@(ViewModel.KeyMode == KeyMode.Secret ? "Ripple secret key (seed base58 encoded) e.g. snoPBrXtMeMyMHUVTgbuqAfg1SUTb" : "Private key e.g. 395898665728F57DE5D90F1DE102278A967D6941A45A6C9A98CB123394489E55")" />
+                </div>
+            </div>
+        }
+
+        <br />
+        <div class="row">
+            <button @onclick="@ViewModel.DeriveKeys" disabled="@ViewModel.IsKeyDeriviationDisabled" type="button" class="btn btn-primary">
+                <span hidden="@(!ViewModel.IsDerivingKeys)" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                <span hidden="@(!ViewModel.IsDerivingKeys)">Deriving keys...</span>
+                <span hidden="@(ViewModel.IsDerivingKeys)">Derive keys</span>
+            </button>
+        </div>
+        <br />
+
+        @if (!string.IsNullOrEmpty(ViewModel.Address))
+        {
+            <p>XRP address: <strong>@ViewModel.Address</strong></p>
+            <div class="alert alert-danger">
+                <strong>Make sure this is your address!</strong>
+            </div>
+        }
+    </div>
+
+    @code{
         [Parameter]
-        public IXrpKeyDeriviationViewModel ViewModel { get; set; } }
+        public IXrpKeyDeriviationViewModel ViewModel { get; set; } 
     }
