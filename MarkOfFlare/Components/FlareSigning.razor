@@ -66,10 +66,10 @@
             <span hidden="@(ViewModel.IsSigning)">Sign Transaction</span>
         </button>
     </div>
-    <div class="text-wrap">
-        FLARE message: @ViewModel.FlareMessage
+    <div class="text-wrap" hidden="@(ViewModel.TxException == null ? false : true)">
+        FLARE message: <strong>@ViewModel.FlareMessage</strong>
     </div>
-    <div class="text-wrap" hidden="@(ViewModel.TxException == null ? true : false )">
+    <div class="text-wrap alert alert-danger"  hidden="@(ViewModel.TxException == null ? true : false )">
         error occured: @ViewModel.TxException?.Message
     </div>
     <div class="text-wrap" hidden="@((ViewModel.TxException == null && ViewModel.Tx != null)? false : true )">

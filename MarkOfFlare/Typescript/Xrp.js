@@ -24,6 +24,7 @@ const bip39 = __importStar(require("bip39"));
 const bip32 = require('ripple-bip32');
 const rippleLib = __importStar(require("ripple-lib"));
 const web3Utils = require('web3-utils');
+const elliptic = __importStar(require("elliptic"));
 var RippleOnFire;
 (function (RippleOnFire) {
     class XrpKeyPair {
@@ -72,6 +73,18 @@ var RippleOnFire;
         DeriveFromSeed(seed) {
             var keys = ripple.deriveKeypair(seed);
             var keypair = new XrpKeyPair(keys.publicKey, keys.privateKey);
+            console.info(keypair.public);
+            console.info(keypair.private);
+            return keypair;
+        }
+        GetPair(privateKeyHex) {
+            var secp256k1 = new elliptic.ec('secp256k1');
+            var publicKey = secp256k1.keyFromPrivate(privateKeyHex)
+                .getPublic()
+                .encodeCompressed();
+            var arrayBuff = new Uint8Array(publicKey);
+            var buffer = Buffer.from(arrayBuff);
+            var keypair = new XrpKeyPair(buffer.toString('hex').toUpperCase(), privateKeyHex);
             console.info(keypair.public);
             console.info(keypair.private);
             return keypair;

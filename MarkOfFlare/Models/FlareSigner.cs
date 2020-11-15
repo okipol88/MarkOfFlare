@@ -28,5 +28,8 @@ namespace MarkOfFlare.Models
 
     public Task<KeyPair> DeriveFromSeed(string seed) =>
       Task.Run(async () => await js.InvokeAsync<KeyPair>("RippleOnFire.DeriveFromSeed", seed));
+
+    public Task<KeyPair> GetPair(string privateKeyHex) =>
+      Task.Run(async () => await js.InvokeAsync<KeyPair>("RippleOnFire.GetPair", privateKeyHex));
   }
 }

@@ -114,7 +114,7 @@ namespace MarkOfFlare.ViewModel
             keyPair = await flareSigner.DeriveFromSeed(Secret);
             break;
           case KeyMode.PrivateKey:
-            keyPair = await flareSigner.DeriveKeyPair(mnemonic, password);
+            keyPair = await flareSigner.GetPair(Secret);
             break;
           default:
             break;
@@ -122,10 +122,12 @@ namespace MarkOfFlare.ViewModel
         Address = await flareSigner.GetAddress(keyPair.@public);
         messenger.Send(new XrpSigningInformationMessage(keyPair, address));
       }
-      catch (Exception)
+      catch (Exception ex)
       {
+        DeriviationError = ex;
         Address = null;
         messenger.Send(new XrpSigningInformationMessage(null, null));
+        Console.WriteLine($"Error {ex}");
       }
       finally
       {

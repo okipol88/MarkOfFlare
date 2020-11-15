@@ -5,8 +5,9 @@ import * as rippleLib from 'ripple-lib'
 import { KeyPair as rippleKeyPair, SignOptions } from 'ripple-lib/dist/npm/transaction/types'
 
 const web3Utils = require('web3-utils')
-
 //import { isAddress as isEthereumAddressValid } from 'web3-utils'
+
+import * as elliptic from 'elliptic'
 
 namespace RippleOnFire
 {
@@ -92,6 +93,24 @@ namespace RippleOnFire
         {
             var keys = ripple.deriveKeypair(seed);
             var keypair = new XrpKeyPair(keys.publicKey, keys.privateKey);
+
+            console.info(keypair.public);
+            console.info(keypair.private);
+
+            return keypair;
+        }
+
+        public GetPair(privateKeyHex: string): IKeyPair
+        {
+            var secp256k1 = new elliptic.ec('secp256k1')
+            var publicKey = secp256k1.keyFromPrivate(privateKeyHex)
+                .getPublic()
+                .encodeCompressed();
+
+            var arrayBuff = new Uint8Array(publicKey)
+            var buffer = Buffer.from(arrayBuff);
+
+            var keypair = new XrpKeyPair(buffer.toString('hex').toUpperCase(), privateKeyHex);
 
             console.info(keypair.public);
             console.info(keypair.private);

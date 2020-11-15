@@ -191,6 +191,8 @@ namespace MarkOfFlare.ViewModel
         }
         catch (Exception ex)
         {
+          FlareMessage = null;
+          Base64qrCode = "";
           TxException = ex;
           return;
         }
