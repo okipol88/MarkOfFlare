@@ -10,6 +10,64 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Build" Version="3.2.1" PrivateAssets="all" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="3.2.1" PrivateAssets="all" />
     <PackageReference Include="System.Net.Http.Json" Version="3.2.0" />
+    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.0.3">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="QRCoder" Version="1.3.9" />
+    <PackageReference Include="MvvmBlazor" Version="1.1.6" />
+  </ItemGroup>
+      
+   <ItemGroup>
+    <Compile Remove="View\**" />
+    <Content Remove="View\**" />
+    <EmbeddedResource Remove="View\**" />
+    <None Remove="View\**" />
+    <TypeScriptCompile Remove="node_modules\**" />
+    <TypeScriptCompile Remove="View\**" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Typescript\" />
+    <Folder Include="Services\" />
+    <Folder Include="Messages\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Typescript\Xrp.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="Typescript\Xrp.ts" />
+  </ItemGroup>
+    
+    
+      <PropertyGroup>
+    <TypeScriptTarget>ES2020</TypeScriptTarget>
+    <TypeScriptJSXEmit>React</TypeScriptJSXEmit>
+    <TypeScriptModuleKind>CommonJS</TypeScriptModuleKind>
+    <TypeScriptCompileOnSaveEnabled>True</TypeScriptCompileOnSaveEnabled>
+    <TypeScriptNoImplicitAny>True</TypeScriptNoImplicitAny>
+    <TypeScriptRemoveComments>True</TypeScriptRemoveComments>
+    <TypeScriptOutFile></TypeScriptOutFile>
+    <TypeScriptOutDir></TypeScriptOutDir>
+    <TypeScriptGeneratesDeclarations>False</TypeScriptGeneratesDeclarations>
+    <TypeScriptNoEmitOnError>True</TypeScriptNoEmitOnError>
+    <TypeScriptSourceMap>True</TypeScriptSourceMap>
+    <TypeScriptMapRoot />
+    <TypeScriptSourceRoot />
+    <TypeScriptESModuleInterop>True</TypeScriptESModuleInterop>
+    <TypeScriptAllowSyntheticDefaultImports>True</TypeScriptAllowSyntheticDefaultImports>
+  </PropertyGroup>
+
+  <Target Name="npm restore" BeforeTargets="BeforeBuild">
+    <Exec Command="npm install" />
+  </Target>
+
+  <Target Name="webpack" AfterTargets="Build">
+    <Exec Command="npm run pack" />
+  </Target>
+
+  <Target Name="webpack clean" AfterTargets="Clean" Condition="Exists('node_modules')">
+    <Exec Command="npm run clean" />
+  </Target>
+    
 </Project>

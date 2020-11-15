@@ -1,0 +1,94 @@
+﻿@using MvvmBlazor.Components
+@using Interfaces
+
+@inherits MvvmComponentBase
+@inject IJSRuntime JsWindow
+
+<div class="jumbotron">
+
+    <div>XRP address: <strong>@ViewModel.Address</strong></div>
+
+    <br>
+    <div class="row">
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text">
+                    <span class="oi oi-book"></span>
+                </span>
+            </div>
+            <input @oninput="@(args => ViewModel.EthereumAddress = (string)args.Value)"
+                   type="text" class="form-control" placeholder="ETH address">
+        </div>
+    </div>
+    <br>
+
+    <div class="alert alert-warning" hidden="@(string.IsNullOrEmpty(ViewModel.EthereumAddress) || ViewModel.IsEthereumAddressValid)">
+        The given ethereum address (@ViewModel.EthereumAddress) seems to be invalid!
+    </div>
+
+    <div class="row ">
+        <div class="input-group col-sm">
+            <input @oninput="@(args => ViewModel.Sequence = args.Value != null ? (uint?)uint.Parse(args.Value.ToString()) : null)"
+                   type="number" class="form-control" placeholder="Next transaction sequence">
+            <div class="input-group-prepend">
+                <span class="input-group-text">
+                    <span class="oi oi-sort-ascending"></span>
+                </span>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="row ">
+        <div class="input-group col-sm">
+            <input @oninput="@(args => ViewModel.Fee = args.Value != null ? (uint?)uint.Parse(args.Value.ToString()) : null)"
+                   type="number" class="form-control" placeholder="Fee in drops">
+            <div class="input-group-prepend">
+                <span class="input-group-text">
+                    <span class="oi oi-dollar"></span>
+                </span>
+            </div>
+        </div>
+    </div>
+    <br>
+
+    @if (ViewModel.Fee.HasValue && ViewModel.Fee > 1000000)
+    {
+        <div class="alert alert-warning">
+            The ammount of drops (@ViewModel.Fee) is <strong>@((double)ViewModel.Fee.Value / 1000000) XRP</strong>. Make sure you want to pay that much for the transaction!
+        </div>
+    }
+
+    <div>
+        <button @onclick="@(ViewModel.SignTx)" disabled="@(ViewModel.IsTxSignDisabled || ViewModel.IsSigning)" type="button" class="btn btn-primary">
+
+            <span hidden="@(!ViewModel.IsSigning)" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            <span hidden="@(!ViewModel.IsSigning)">Signing...</span>
+            <span hidden="@(ViewModel.IsSigning)">Sign Transaction</span>
+        </button>
+    </div>
+    <div class="text-wrap" hidden="@(ViewModel.TxException == null ? false : true)">
+        FLARE message: <strong>@ViewModel.FlareMessage</strong>
+    </div>
+    <div class="text-wrap alert alert-danger"  hidden="@(ViewModel.TxException == null ? true : false )">
+        error occured: @ViewModel.TxException?.Message
+    </div>
+    <div class="text-wrap" hidden="@((ViewModel.TxException == null && ViewModel.Tx != null)? false : true )">
+        <p class="text-break">Transaction id: </p>
+        <p class="font-weight-bold text-break">@($"{@ViewModel.Tx?.id}")</p>
+        <p class="text-break">Signed transaction:</p>
+        <p class="font-weight-bold text-break">@($"{@ViewModel.Tx?.signedTransaction}")</p>
+    </div>
+    @if (!string.IsNullOrEmpty(ViewModel.Base64qrCode))
+    {
+        <div hidden="@(ViewModel.Tx == null ? true : false )">
+            <img src="@String.Format("data:image/png;base64,{0}", ViewModel.Base64qrCode)" height="600" width="600" />
+        </div>
+    }
+
+</div>
+
+@code{
+
+    [Parameter]
+    public IFlareSigningViewModel ViewModel { get; set; }
+}

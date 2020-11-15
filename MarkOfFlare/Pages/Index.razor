@@ -1,7 +1,83 @@
 ﻿@page "/"
 
-<h1>Hello, world!</h1>
+@using MvvmBlazor.Components
+@using MarkOfFlare.Components
+@using MvvmBlazor.ViewModel;
+@using Interfaces;
 
-Welcome to your new app.
+@inherits MvvmComponentBase
+@inject IFlareWizarClaimViewModel ViewModel
+@inject IXrpKeyDeriviationViewModel StepOne
+@inject IFlareSigningViewModel StepTwo
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+<h3>Flare</h3>
+
+<Wizard Progress="@ViewModel.Progress" PreviousButtonDisabled="@ViewModel.PreviousButtonDisabled"
+        NextButtonDisabled="@ViewModel.NextButtonDisabled"
+        GoToPreviousStep="@ViewModel.GoToPreviousStep" GoToNextStep="@ViewModel.GoToNextStep">
+
+    <WizardInputCard WizardStep="1" CurrentStep="@ViewModel.CurrentStep"
+                     CardHeader="Step 1 of 2"
+                     CardTitle="XRP Keys input"
+                     CardText="Please select key source">
+        <XrpKeyDeriviation ViewModel="@StepOne" />
+    </WizardInputCard>
+    <WizardInputCard WizardStep="2" CurrentStep="@ViewModel.CurrentStep"
+                     CardHeader="Step 2 of 2"
+                     CardTitle="FLARE signing"
+                     CardText="Please input data required to make the account signing for FLARE">
+        <FlareSigning ViewModel="@StepTwo" />
+    </WizardInputCard>
+</Wizard>
+
+@code {
+
+  private IEnumerable<ViewModelBase> ViewModels
+  {
+      get
+      {
+          return new List<object> { ViewModel, StepOne, StepTwo }
+              .OfType<ViewModelBase>();
+
+      }
+  }
+
+  protected override void OnInitialized()
+  {
+      base.OnInitialized();
+
+      foreach (var vm in ViewModels)
+      {
+          vm.OnInitialized();
+
+          vm.PropertyChanged += VM_PropertyChanged;
+      }
+  }
+
+  protected void VM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs args)
+  {
+      StateHasChanged();
+  }
+
+  protected override async Task OnInitializedAsync()
+  {
+      await base.OnInitializedAsync();
+
+      foreach (var vm in ViewModels)
+      {
+          await vm.OnInitializedAsync();
+      }
+  }
+
+  protected override void Dispose(bool disposing)
+  {
+      base.Dispose(disposing);
+
+      foreach (var vm in ViewModels)
+      {
+          vm.Dispose();
+          vm.PropertyChanged -= VM_PropertyChanged;
+      }
+  }
+
+}
