@@ -11,6 +11,7 @@ using MvvmBlazor.Extensions;
 using MarkOfFlare.ViewModel;
 using MarkOfFlare.Services;
 using MarkOfFlare.Interfaces;
+using MarkOfFlare.Models;
 
 namespace MarkOfFlare
 {
@@ -29,9 +30,10 @@ namespace MarkOfFlare
             builder.Services.AddTransient<IXrpKeyDeriviationViewModel, XrpKeyDeriviationViewModel>();
             builder.Services.AddTransient<IFlareSigningViewModel, FlareSigningViewModel>();
 
-            builder.Services.AddSingleton<IMessenger>(new Messenger());
+            builder.Services.AddSingleton<IMessenger, Messenger>();
+            builder.Services.AddSingleton<IFlareSigner, FlareSigner>();
 
-            await builder.Build().RunAsync();
+      await builder.Build().RunAsync();
         }
     }
 }

@@ -19,16 +19,18 @@
   </ItemGroup>
       
    <ItemGroup>
+    <Compile Remove="View\**" />
+    <Content Remove="View\**" />
+    <EmbeddedResource Remove="View\**" />
+    <None Remove="View\**" />
     <TypeScriptCompile Remove="node_modules\**" />
+    <TypeScriptCompile Remove="View\**" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Typescript\" />
-    <Folder Include="View\" />
-    <Folder Include="Components\" />
     <Folder Include="Services\" />
     <Folder Include="Messages\" />
-    <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Typescript\Xrp.ts" />

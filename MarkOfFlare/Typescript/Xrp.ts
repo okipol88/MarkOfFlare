@@ -2,7 +2,11 @@
 import * as bip39 from 'bip39'
 const bip32 = require('ripple-bip32')
 import * as rippleLib from 'ripple-lib'
-import { KeyPair as rippleKeyPair, SignOptions }  from 'ripple-lib/dist/npm/transaction/types'
+import { KeyPair as rippleKeyPair, SignOptions } from 'ripple-lib/dist/npm/transaction/types'
+
+const web3Utils = require('web3-utils')
+
+//import { isAddress as isEthereumAddressValid } from 'web3-utils'
 
 namespace RippleOnFire
 {
@@ -94,6 +98,14 @@ namespace RippleOnFire
             console.info(keypair.private);
 
             return keypair;
+        }
+
+        public IsValidAddress(ethereumAddress: string): boolean {
+            return web3Utils.isAddress(ethereumAddress);
+            //return isEthereumAddressValid(ethereumAddress) // TODO: This caused a copmilation error for 
+            //Severity	Code	Description	Project	File	Line	Suppression State
+            //Error	TS7016	Build: Could not find a declaration file for module 'bn.js'. '/node_modules/bn.js/lib/bn.js' implicitly has an 'any' type.MarkOfFlare	\MarkOfFlare\node_modules\web3 - utils\types\index.d.ts	23	
+
         }
 
         public  GetAddress(publicKey: string) : string

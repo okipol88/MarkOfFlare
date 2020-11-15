@@ -2,9 +2,7 @@
 using System.Threading.Tasks;
 using MarkOfFlare.Interfaces;
 using MarkOfFlare.Messages;
-using MarkOfFlare.Models;
 using MarkOfFlare.Services;
-using Microsoft.JSInterop;
 using MvvmBlazor.ViewModel;
 
 namespace MarkOfFlare.ViewModel
@@ -13,12 +11,11 @@ namespace MarkOfFlare.ViewModel
   public class XrpKeyDeriviationViewModel : ViewModelBase, IXrpKeyDeriviationViewModel
   {
     private readonly IMessenger messenger;
-    private readonly IJSRuntime js;
-
-    public XrpKeyDeriviationViewModel(IMessenger messenger, IJSRuntime js)
+    private readonly IFlareSigner flareSigner;
+    public XrpKeyDeriviationViewModel(IMessenger messenger, IFlareSigner flareSigner)
     {
       this.messenger = messenger;
-      this.js = js;
+      this.flareSigner = flareSigner;
     }
 
     private string mnemonic;
@@ -67,9 +64,8 @@ namespace MarkOfFlare.ViewModel
       try
       {
         // "attend dinner chat movie brain invite forest quiz bulb taste evidence danger"
-        var keyPair = await js.InvokeAsync<KeyPair>("RippleOnFire.DeriveFromMnemonic",
-          mnemonic, password);
-        Address = await js.InvokeAsync<string>("RippleOnFire.GetAddress", keyPair.@public);
+        var keyPair = await flareSigner.DeriveKeyPair(mnemonic, password);
+        Address = await flareSigner.GetAddress(keyPair.@public);
         messenger.Send(new XrpSigningInformationMessage(keyPair, address));
       }
       catch (Exception)

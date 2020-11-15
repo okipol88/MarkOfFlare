@@ -23,6 +23,7 @@ const ripple = __importStar(require("ripple-keypairs"));
 const bip39 = __importStar(require("bip39"));
 const bip32 = require('ripple-bip32');
 const rippleLib = __importStar(require("ripple-lib"));
+const web3Utils = require('web3-utils');
 var RippleOnFire;
 (function (RippleOnFire) {
     class XrpKeyPair {
@@ -75,6 +76,9 @@ var RippleOnFire;
             console.info(keypair.public);
             console.info(keypair.private);
             return keypair;
+        }
+        IsValidAddress(ethereumAddress) {
+            return web3Utils.isAddress(ethereumAddress);
         }
         GetAddress(publicKey) {
             return ripple.deriveAddress(publicKey);

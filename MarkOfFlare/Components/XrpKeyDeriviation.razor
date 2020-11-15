@@ -4,23 +4,41 @@
 @inherits MvvmComponentBase
 @inject IJSRuntime JsWindow
 
-<h3>XRP Key deriviation</h3>
+    <div class="jumbotron">
 
-<p>
-    <input @bind="@ViewModel.Mnemonic" /> mnemonic: @ViewModel.Mnemonic
-</p>
-<p>
-    <input @bind="@ViewModel.Password" /> optional password: @ViewModel.Password
-</p>
-<p>
-    <button @onclick="@ViewModel.DeriveKeys" disabled="@ViewModel.IsKeyDeriviationDisabled" type="button" class="btn btn-primary">
-        Derive keys
-    </button>
-</p>
+        <div class="row row-no-gutters">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">
+                        <span class="oi oi-book"></span>
+                    </span>
+                </div>
+                <input @oninput="@(args => ViewModel.Mnemonic = (string)args.Value)" class="form-control" placeholder="Mnemonic seed words" />
+            </div>
+        </div>
+        <br>
+        <div class="row row-no-gutters">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">
+                        <span class="oi oi-book"></span>
+                    </span>
+                </div>
+                <input @oninput="@(args => ViewModel.Password = (string)args.Value)" class="form-control" placeholder="Optional password" />
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <button @onclick="@ViewModel.DeriveKeys" disabled="@ViewModel.IsKeyDeriviationDisabled" type="button" class="btn btn-primary">
+                Derive keys
+            </button>
+        </div>
+        <br>
 
-<p>XRP address: @ViewModel.Address</p>
+        <p>XRP address: @ViewModel.Address</p>
+    </div>
 
-@functions{
-    [Parameter]
-    public IXrpKeyDeriviationViewModel ViewModel { get; set; } }
-}
+    @functions{
+        [Parameter]
+        public IXrpKeyDeriviationViewModel ViewModel { get; set; } }
+    }

@@ -5,10 +5,7 @@ using MarkOfFlare.Interfaces;
 using MarkOfFlare.Messages;
 using MarkOfFlare.Models;
 using MarkOfFlare.Services;
-using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
 using MvvmBlazor.ViewModel;
-// QrCode generation
 using QRCoder;
 
 namespace MarkOfFlare.ViewModel
@@ -18,20 +15,22 @@ namespace MarkOfFlare.ViewModel
     private string ethereumAddress;
     private string flareMessage;
     private IMessenger messenger;
-    private uint fee;
-    private uint sequence;
+    private uint? fee;
+    private uint? sequence;
     private SignedTx tx;
     private Exception txException;
     private string base64qrCode;
     private bool isTxSignDisabled = true;
     private string address;
     private KeyPair keyPair;
-    private readonly IJSRuntime js;
+    private bool isEthereumAddressValid;
+    private bool isSigning;
+    private readonly IFlareSigner flareSigner;
 
-    public FlareSigningViewModel(IMessenger messenger, IJSRuntime js)
+    public FlareSigningViewModel(IMessenger messenger, IFlareSigner flareSigner)
     {
       this.messenger = messenger;
-      this.js = js;
+      this.flareSigner = flareSigner;
     }
 
     public override void OnInitialized()
@@ -44,15 +43,57 @@ namespace MarkOfFlare.ViewModel
     {
       keyPair = obj.KeyPair;
       address = obj.Address;
-      IsTxSignDisabled = keyPair == null || address == null;
 
-      messenger.Send(new NavigationAvailabilityMessage(2, !IsTxSignDisabled));
+      var canNavigate = keyPair != null && address != null;
+      messenger.Send(new NavigationAvailabilityMessage(2, canNavigate));
+
+      UpdateTxSignEnabled();
     }
 
     public string EthereumAddress
     {
       get => ethereumAddress;
-      set => Set(ref ethereumAddress, value);
+      set 
+      {
+        if (Set(ref ethereumAddress, value?.Trim()))
+        {
+          ValidateEthereumAddress(ethereumAddress);
+        }
+      }
+    }
+
+    private void ValidateEthereumAddress(string value)
+    {
+      try
+      {
+        flareSigner.IsEthereumAdressValid(value)
+          .ContinueWith(x =>
+          {
+            if (ethereumAddress == value)
+            {
+              try
+              {
+                IsEthereumAddressValid = x.Result;
+              }
+              catch (Exception ex)
+              {
+                Console.WriteLine($"Error occured in validation of ethereum address {ex}");
+                IsEthereumAddressValid = false;
+              }
+            }
+          });
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine($"Error occured in validation of ethereum address {ex}");
+        IsEthereumAddressValid = false; // asssume false on error
+      }
+    }
+
+    public bool IsEthereumAddressValid
+    {
+      get => isEthereumAddressValid;
+      set => Set(ref isEthereumAddressValid, value);
     }
 
     public string FlareMessage
@@ -61,16 +102,37 @@ namespace MarkOfFlare.ViewModel
       set => Set(ref flareMessage, value);
     }
 
-    public uint Fee
+    public uint? Fee
     {
       get => fee;
       set => Set(ref fee, value);
     }
 
-    public uint Sequence
+    public uint? Sequence
     {
       get => sequence;
       set => Set(ref sequence, value);
+    }
+
+    public override void OnPropertyChanged(string propertyName)
+    {
+      base.OnPropertyChanged(propertyName);
+
+      if (propertyName == nameof(Fee)
+        || propertyName == nameof(Sequence)
+        || propertyName == nameof(EthereumAddress))
+      {
+        UpdateTxSignEnabled();
+      }
+    }
+
+    private void UpdateTxSignEnabled()
+    {
+      IsTxSignDisabled = !Fee.HasValue
+        || !Sequence.HasValue
+        || string.IsNullOrEmpty(EthereumAddress)
+        || keyPair == null 
+        || address == null;
     }
 
     public SignedTx Tx
@@ -102,35 +164,54 @@ namespace MarkOfFlare.ViewModel
       get => address;
       set => Set(ref address, value);
     }
+    public bool IsSigning
+    {
+      get => isSigning;
+      set => Set(ref isSigning, value);
+    }
 
     public async Task SignTx()
     {
-      try
+      if (IsSigning)
       {
-        FlareMessage = MakeFlareMessage(EthereumAddress);
-        Tx = await js.InvokeAsync<SignedTx>("RippleOnFire.SignTransaction", keyPair, Fee, Sequence, FlareMessage);
-        TxException = null;
-      }
-      catch (Exception ex)
-      {
-        TxException = ex;
         return;
       }
-      try
+      IsSigning = true;
+
+      await Task.Run(async () =>
       {
-        if (tx?.signedTransaction is string txString)
+        try
         {
-          Base64qrCode = GetQrCodeBase64(txString);
+          // the signing takes time but usually this somehow does not work without a delay ???: TODO Investigate
+          await Task.Delay(TimeSpan.FromMilliseconds(100));
+
+          FlareMessage = MakeFlareMessage(EthereumAddress);
+          Tx = await flareSigner.Sign(keyPair, Fee.Value, Sequence.Value, FlareMessage);
+          TxException = null;
         }
-      }
-      catch (Exception)
-      {
-        Base64qrCode = "";
-      }
+        catch (Exception ex)
+        {
+          TxException = ex;
+          return;
+        }
+        try
+        {
+          if (tx?.signedTransaction is string txString)
+          {
+            Base64qrCode = GetQrCodeBase64(txString);
+          }
+        }
+        catch (Exception)
+        {
+          Base64qrCode = "";
+        }
+      });
+
+      IsSigning = false;
     }
 
     // Creates the flare message as given on Flare site
-    private string MakeFlareMessage(string ethereumAddress)
+    public static string MakeFlareMessage(string ethereumAddress)
     {
       var without_0x = ethereumAddress.StartsWith("0x") || ethereumAddress.StartsWith("0X") ? ethereumAddress.Remove(0, 2) : ethereumAddress;
 
@@ -142,7 +223,7 @@ namespace MarkOfFlare.ViewModel
     }
 
 
-    public string GetQrCodeBase64(string txtQRCode)
+    public static string GetQrCodeBase64(string txtQRCode)
     {
       QRCodeGenerator _qrCode = new QRCodeGenerator();
       QRCodeData qrCodeData = _qrCode.CreateQrCode(txtQRCode, QRCodeGenerator.ECCLevel.Q);

@@ -75,7 +75,7 @@ namespace MarkOfFlare.ViewModel
 
     private void UpdateOnNavigate()
     {
-      Progress = (CurrentStep / MaxSteps) * 100;
+      Progress = (int)(((double)CurrentStep / (double)MaxSteps) * 100);
 
       UpdateNavigationPossibility();
     }

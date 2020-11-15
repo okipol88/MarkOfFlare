@@ -2,12 +2,10 @@
 
 @using MvvmBlazor.Components
 @using MarkOfFlare.Components
-@using MarkOfFlare.ViewModel
 @using MvvmBlazor.ViewModel;
 @using Interfaces;
 
 @inherits MvvmComponentBase
-@inject IJSRuntime JsWindow
 @inject IFlareWizarClaimViewModel ViewModel
 @inject IXrpKeyDeriviationViewModel StepOne
 @inject IFlareSigningViewModel StepTwo
@@ -20,14 +18,14 @@
 
     <WizardInputCard WizardStep="1" CurrentStep="@ViewModel.CurrentStep"
                      CardHeader="Step 1 of 2"
-                     CardTitle="Welcome to the Framingham CVD 10 Year Risk Calculator"
-                     CardText="Please select your gender to start the calculator">
+                     CardTitle="XRP Keys input"
+                     CardText="Please select key source">
         <XrpKeyDeriviation ViewModel="@StepOne" />
     </WizardInputCard>
     <WizardInputCard WizardStep="2" CurrentStep="@ViewModel.CurrentStep"
                      CardHeader="Step 2 of 2"
-                     CardTitle="Welcome to the Framingham CVD 10 Year Risk Calculator"
-                     CardText="Please select your gender to start the calculator">
+                     CardTitle="FLARE signing"
+                     CardText="Please input data required to make the account signing for FLARE">
         <FlareSigning ViewModel="@StepTwo" />
     </WizardInputCard>
 </Wizard>
@@ -56,22 +54,19 @@
       }
   }
 
-  protected async void VM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs args)
+  protected void VM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs args)
   {
-      await InvokeAsync(() =>
-      {
-          StateHasChanged();
-      });
+      StateHasChanged();
   }
 
   protected override async Task OnInitializedAsync()
   {
+      await base.OnInitializedAsync();
+
       foreach (var vm in ViewModels)
       {
           await vm.OnInitializedAsync();
       }
-
-      await base.OnInitializedAsync();
   }
 
   protected override void Dispose(bool disposing)
