@@ -57,6 +57,20 @@
   protected void VM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs args)
   {
       StateHasChanged();
+
+      if (sender == ViewModel && args.PropertyName == nameof(ViewModel.CurrentStep))
+      {
+          if (ViewModel.CurrentStep == 1)
+          {
+              StepOne.OnNavigatedTo();
+              StepTwo.OnNavigatedFrom();
+          }
+          else if (ViewModel.CurrentStep == 2)
+          {
+              StepTwo.OnNavigatedTo();
+              StepOne.OnNavigatedFrom();
+          }
+      }
   }
 
   protected override async Task OnInitializedAsync()

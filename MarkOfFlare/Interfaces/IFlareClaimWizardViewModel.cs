@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace MarkOfFlare.Interfaces
 {
 
-  public interface IFlareWizarClaimViewModel: INotifyPropertyChanged
+  public interface IFlareWizarClaimViewModel:  INotifyPropertyChanged
   {
     public int Progress { get; set; }
 

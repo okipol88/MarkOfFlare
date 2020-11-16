@@ -12,7 +12,7 @@ namespace MarkOfFlare.Interfaces
     PrivateKey
   }
 
-  public interface IXrpKeyDeriviationViewModel: INotifyPropertyChanged
+  public interface IXrpKeyDeriviationViewModel: INavigationViewModel, INotifyPropertyChanged
   {
     KeyMode KeyMode { get; set; }
 

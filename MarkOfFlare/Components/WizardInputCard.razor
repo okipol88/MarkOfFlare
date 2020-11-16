@@ -38,4 +38,11 @@
     [Parameter]
     public string CardText { get; set; }
 
+    protected override void OnAfterRender(bool firstRender)
+    {
+      base.OnAfterRender(firstRender);
+
+      Console.WriteLine($"AFter render first?: {firstRender}");
+    }
+
 }

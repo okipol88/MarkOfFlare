@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using MarkOfFlare.Interfaces;
 using MarkOfFlare.Messages;
 using MarkOfFlare.Services;
-using Microsoft.AspNetCore.Components;
 using MvvmBlazor.ViewModel;
 
 namespace MarkOfFlare.ViewModel
@@ -18,7 +17,7 @@ namespace MarkOfFlare.ViewModel
       this.messenger = messenger;
     }
 
-    private int progress = 50;
+    private int progress = 0;
     private bool previousButtonDisabled = true;
     private bool nextButtonDisabled = true;
     private int currentStep = 1;
@@ -75,7 +74,7 @@ namespace MarkOfFlare.ViewModel
 
     private void UpdateOnNavigate()
     {
-      Progress = (int)(((double)CurrentStep / (double)MaxSteps) * 100);
+      Progress = (int)(((double)(CurrentStep -1 )/ (double)(MaxSteps - 1)) * 100);
 
       UpdateNavigationPossibility();
     }
@@ -88,7 +87,7 @@ namespace MarkOfFlare.ViewModel
       PreviousButtonDisabled = !canPrevious || CurrentStep == 1;
       NextButtonDisabled = !canNext || CurrentStep == MaxSteps;
 
-      Console.WriteLine($"Previous {PreviousButtonDisabled}; Next {NextButtonDisabled}");
+      Console.WriteLine($"Previous disabled: {PreviousButtonDisabled}; Next disabled: {NextButtonDisabled}");
     }
 
     public void GoToNextStep()

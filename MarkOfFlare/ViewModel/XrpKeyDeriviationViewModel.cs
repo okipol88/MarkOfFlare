@@ -88,8 +88,12 @@ namespace MarkOfFlare.ViewModel
       {
         return;
       }
+      AssignKeyDeriviationDisabled();
+    }
 
-      IsKeyDeriviationDisabled = KeyMode == KeyMode.Mnemonic 
+    private void AssignKeyDeriviationDisabled()
+    {
+      IsKeyDeriviationDisabled = KeyMode == KeyMode.Mnemonic
         ? !(Mnemonic?.Length > 0)
         : !(Secret?.Length > 0);
     }
@@ -133,6 +137,25 @@ namespace MarkOfFlare.ViewModel
       {
         IsDerivingKeys = false;
       }
+    }
+
+    public void OnNavigatedTo() => ResetState();
+
+    private void ResetState()
+    {
+      DeriviationError = null;
+      Password = null;
+      Mnemonic = null;
+      Secret = null;
+      Address = null;
+      messenger.Send(new XrpSigningInformationMessage(null, null));
+
+      AssignKeyDeriviationDisabled();
+    }
+
+    public void OnNavigatedFrom()
+    { 
+    
     }
   }
 }
