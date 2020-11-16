@@ -233,6 +233,25 @@ namespace MarkOfFlare.ViewModel
       var qrCodeImage = qrCode.GetGraphic(20);
       return System.Convert.ToBase64String(qrCodeImage);
     }
+
+    public void OnNavigatedTo() => ResetState();
+
+    private void ResetState()
+    {
+      Tx = null;
+      TxException = null;
+      FlareMessage = null;
+      Fee = null;
+      Sequence = null;
+      EthereumAddress = null;
+
+      UpdateTxSignEnabled();
+    }
+
+    public void OnNavigatedFrom() 
+    { 
+    
+    }
   }
 }
 

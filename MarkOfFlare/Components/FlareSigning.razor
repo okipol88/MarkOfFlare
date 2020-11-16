@@ -66,7 +66,7 @@
             <span hidden="@(ViewModel.IsSigning)">Sign Transaction</span>
         </button>
     </div>
-    <div class="text-wrap" hidden="@(ViewModel.TxException == null ? false : true)">
+    <div class="text-wrap" hidden="@(ViewModel.TxException == null && !string.IsNullOrEmpty(ViewModel.FlareMessage) ? false : true)">
         FLARE message: <strong>@ViewModel.FlareMessage</strong>
     </div>
     <div class="text-wrap alert alert-danger"  hidden="@(ViewModel.TxException == null ? true : false )">

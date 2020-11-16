@@ -6,7 +6,15 @@ using MarkOfFlare.Models;
 
 namespace MarkOfFlare.Interfaces
 {
-  public interface IFlareSigningViewModel : INotifyPropertyChanged
+
+  public interface INavigationViewModel
+  {
+    void OnNavigatedTo();
+
+    void OnNavigatedFrom();
+  }
+
+  public interface IFlareSigningViewModel : INavigationViewModel, INotifyPropertyChanged
   {
     string EthereumAddress { get; set; }
     string FlareMessage { get; }
